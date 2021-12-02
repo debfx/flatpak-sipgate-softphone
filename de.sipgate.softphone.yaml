@@ -1,0 +1,46 @@
+app-id: de.sipgate.softphone
+branch: stable
+runtime: org.freedesktop.Platform
+runtime-version: '21.08'
+base: org.electronjs.Electron2.BaseApp
+base-version: '21.08'
+sdk: org.freedesktop.Sdk
+command: run-sipgate-softphone
+separate-locales: false
+finish-args:
+  - --share=ipc
+  - --share=network
+  - --socket=x11
+  - --socket=wayland
+  - --socket=pulseaudio
+  - --device=dri
+
+modules:
+  - name: modeler
+    buildsystem: simple
+    build-commands:
+      - chmod +x sipgate-softphone.AppImage
+      - ./sipgate-softphone.AppImage --appimage-extract
+      - mv squashfs-root/* /app
+      - rm -rf squashfs-root
+      - install -Dm644 /app/usr/share/icons/hicolor/96x96/apps/sipgate-softphone.png
+        /app/share/icons/hicolor/96x96/apps/de.sipgate.softphone.png
+      - install -Dm644 /app/usr/share/icons/hicolor/128x128/apps/sipgate-softphone.png
+        /app/share/icons/hicolor/128x128/apps/de.sipgate.softphone.png
+      - install -Dm644 /app/usr/share/icons/hicolor/256x256/apps/sipgate-softphone.png
+        /app/share/icons/hicolor/256x256/apps/de.sipgate.softphone.png
+      - install -Dm644 /app/sipgate-softphone.desktop
+        /app/share/applications/de.sipgate.softphone.desktop
+      - desktop-file-edit --set-icon de.sipgate.softphone --set-key Exec --set-value
+        'run-sipgate-softphone' /app/share/applications/de.sipgate.softphone.desktop
+      - install -Dm755 run.sh /app/bin/run-sipgate-softphone
+    sources:
+      - type: file
+        url: https://sipgate-desktop-app.s3.eu-central-1.amazonaws.com/sipgate-softphone-1.16.4.AppImage
+        sha256: eebd8b30ca390016192f8138104078ec792b24f34e421ea471147b4202e0f743
+        dest-filename: sipgate-softphone.AppImage
+      - type: script
+        dest-filename: run.sh
+        commands:
+          - export TMPDIR="$XDG_RUNTIME_DIR/app/$FLATPAK_ID"
+          - exec zypak-wrapper /app/sipgate-softphone "$@"
