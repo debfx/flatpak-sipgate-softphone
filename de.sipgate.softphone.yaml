@@ -33,12 +33,16 @@ modules:
         /app/share/applications/de.sipgate.softphone.desktop
       - desktop-file-edit --set-icon de.sipgate.softphone --set-key Exec --set-value
         'run-sipgate-softphone' /app/share/applications/de.sipgate.softphone.desktop
+      - install -Dm644 de.sipgate.softphone.appdata.xml -t /app/share/appdata
       - install -Dm755 run.sh /app/bin/run-sipgate-softphone
+      - rm -rv /app/usr
     sources:
       - type: file
         url: https://sipgate-desktop-app.s3.eu-central-1.amazonaws.com/sipgate-softphone-1.16.4.AppImage
         sha256: eebd8b30ca390016192f8138104078ec792b24f34e421ea471147b4202e0f743
         dest-filename: sipgate-softphone.AppImage
+      - type: file
+        path: de.sipgate.softphone.appdata.xml
       - type: script
         dest-filename: run.sh
         commands:
